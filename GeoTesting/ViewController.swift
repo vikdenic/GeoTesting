@@ -12,6 +12,8 @@ import MapKit
 
 class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
+    @IBOutlet var setRegionButton: UIBarButtonItem!
+
     var coordStringArray = [String]()
     let locationManager = CLLocationManager()
 
@@ -26,6 +28,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         super.viewDidLoad()
         title = NSString(format: "%.0f", slider.value)
         locationManagerSetUp()
+
+//        [aButton addTarget:self action:@selector(holdDown) forControlEvents:UIControlEventTouchDown];
+
     }
 
     func locationManagerSetUp()
@@ -84,6 +89,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
 
     @IBAction func onRegionButtonTapped(sender: UIBarButtonItem)
     {
+        if let previousOverlays = mapView.overlays
+        {
+            mapView.removeOverlay(previousOverlays[0] as MKOverlay)
+            for monitoredRegion in locationManager.monitoredRegions
+            {
+                locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
+            }
+        }
+
         let coordinate = CLLocationCoordinate2DMake(currentLocation.coordinate.latitude, currentLocation.coordinate.longitude)
         let regionSpan = Double(slider.value) as CLLocationDistance
         let overlay = MKCircle(centerCoordinate: coordinate, radius: regionSpan)
