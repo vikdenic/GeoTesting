@@ -10,7 +10,7 @@ import UIKit
 import CoreLocation
 import MapKit
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDelegate {
 
     var coordStringArray = [String]()
     let locationManager = CLLocationManager()
@@ -18,6 +18,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet var mapView: MKMapView!
     @IBOutlet var slider: UISlider!
     @IBOutlet var segmentedControl: UISegmentedControl!
+    var currentLocation = CLLocation()
+    var circularRegion = CLCircularRegion()
 
     override func viewDidLoad()
     {
@@ -47,6 +49,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
     func locationManager(manager: CLLocationManager!, didUpdateToLocation newLocation: CLLocation!, fromLocation oldLocation: CLLocation!)
     {
+        currentLocation = newLocation
         let newLat = NSString(format: "%.4f", newLocation.coordinate.latitude)
         let newLong = NSString(format: "%.4f", newLocation.coordinate.longitude)
 
@@ -58,6 +61,40 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 
         locationManager.stopUpdatingLocation()
         locationManager.stopMonitoringSignificantLocationChanges()
+    }
+
+    func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
+        println("entered")
+    }
+
+    func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
+        println("exited")
+    }
+
+    @IBAction func onRegionButtonTapped(sender: UIBarButtonItem)
+    {
+        let coordinate = CLLocationCoordinate2DMake(currentLocation.coordinate.latitude, currentLocation.coordinate.longitude)
+        let regionSpan = Double(slider.value) as CLLocationDistance
+        let overlay = MKCircle(centerCoordinate: coordinate, radius: regionSpan)
+        mapView.addOverlay(overlay)
+
+        circularRegion = CLCircularRegion(center: currentLocation.coordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
+        locationManager.startMonitoringForRegion(circularRegion)
+    }
+
+    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
+        if overlay is MKCircle
+        {
+            let renderer = MKCircleRenderer(circle: overlay as MKCircle)
+            renderer.fillColor = UIColor.cyanColor().colorWithAlphaComponent(0.2)
+            renderer.strokeColor = UIColor.blueColor().colorWithAlphaComponent(0.7)
+            renderer.lineWidth = 3.0
+            return renderer
+        }
+        else
+        {
+            return nil
+        }
     }
 
     @IBAction func onUpdateLocationTapped(sender: UIBarButtonItem)
@@ -75,6 +112,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBAction func onSliderMoved(sender: UISlider)
     {
         title = NSString(format: "%.0f", slider.value)
+    }
+}
+
+extension NSDate
+{
+    func toStringOfMeridiemTime() -> String
+    {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "hh:mm aa"
+        var formattedString = dateFormatter.stringFromDate(self) as NSString
+        let firstCharacter = formattedString.substringToIndex(1)
+        if firstCharacter == "0"
+        {
+            formattedString = formattedString.substringFromIndex(1)
+        }
+        return formattedString
     }
 }
 

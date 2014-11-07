@@ -24,7 +24,7 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="Jjo-0c-ARz"/>
                                 </connections>
                             </mapView>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="16" minValue="0.0" maxValue="33" translatesAutoresizingMaskIntoConstraints="NO" id="G1h-A5-0Nu">
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="125" minValue="0.0" maxValue="250" translatesAutoresizingMaskIntoConstraints="NO" id="G1h-A5-0Nu">
                                 <rect key="frame" x="0.0" y="-15" width="118" height="31"/>
                                 <color key="tintColor" red="0.40000000596046448" green="0.40000000596046448" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
@@ -108,6 +108,9 @@
                     <navigationItem key="navigationItem" id="RQ2-G0-Wxj">
                         <barButtonItem key="leftBarButtonItem" title="Set Region" id="0v2-ej-4Dw">
                             <color key="tintColor" red="0.0" green="0.50196081399917603" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="onRegionButtonTapped:" destination="vXZ-lx-hvc" id="YAN-ja-D42"/>
+                            </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Update Location" id="JeY-9b-I3Y">
                             <color key="tintColor" red="0.0" green="0.50196081399917603" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
