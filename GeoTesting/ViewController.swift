@@ -71,6 +71,17 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         println("exited")
     }
 
+    func locationManager(manager: CLLocationManager!, didDetermineState state: CLRegionState, forRegion region: CLRegion!) {
+        if state == .Inside
+        {
+            slider.tintColor = UIColor.blueColor()
+        }
+        else if state == .Outside
+        {
+            slider.tintColor = UIColor.redColor()
+        }
+    }
+
     @IBAction func onRegionButtonTapped(sender: UIBarButtonItem)
     {
         let coordinate = CLLocationCoordinate2DMake(currentLocation.coordinate.latitude, currentLocation.coordinate.longitude)
@@ -120,14 +131,14 @@ extension NSDate
     func toStringOfMeridiemTime() -> String
     {
         let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "hh:mm aa"
+        dateFormatter.dateFormat = "hh:mm aa ss"
         var formattedString = dateFormatter.stringFromDate(self) as NSString
         let firstCharacter = formattedString.substringToIndex(1)
         if firstCharacter == "0"
         {
             formattedString = formattedString.substringFromIndex(1)
         }
-        return formattedString
+        return formattedString + "s"
     }
 }
 
