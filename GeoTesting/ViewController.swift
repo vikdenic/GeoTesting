@@ -27,10 +27,45 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         super.viewDidLoad()
         title = NSString(format: "%.0f", slider.value)
         locationManagerSetUp()
-
-//        [aButton addTarget:self action:@selector(holdDown) forControlEvents:UIControlEventTouchDown];
-
+        setUpLongTouchGesture()
     }
+
+    func setUpLongTouchGesture()
+    {
+        let lpgr = UILongPressGestureRecognizer(target: self, action: "handleGesture:")
+        lpgr.minimumPressDuration = 2.0
+        mapView.addGestureRecognizer(lpgr)
+    }
+
+    func handleGesture (gestureRecognizer : UITapGestureRecognizer)
+    {
+        if gestureRecognizer.state != UIGestureRecognizerState.Ended
+        {
+            if let previousOverlays = mapView.overlays
+            {
+                mapView.removeOverlay(previousOverlays[0] as MKOverlay)
+                for monitoredRegion in locationManager.monitoredRegions
+                {
+                    locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
+                }
+                slider.tintColor = UIColor.darkGrayColor()
+            }
+
+            let touchPoint = gestureRecognizer.locationInView(mapView)
+            let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
+
+            let coordinate = CLLocationCoordinate2DMake(touchMapCoordinate.latitude, touchMapCoordinate.longitude)
+            let regionSpan = Double(slider.value) as CLLocationDistance
+            let overlay = MKCircle(centerCoordinate: coordinate, radius: regionSpan)
+            mapView.addOverlay(overlay)
+
+            let circularRegion = CLCircularRegion(center: touchMapCoordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
+            locationManager.startMonitoringForRegion(circularRegion)
+
+            NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
+        }
+    }
+    
 
     func locationManagerSetUp()
     {
@@ -79,18 +114,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     }
 
     func locationManager(manager: CLLocationManager!, didDetermineState state: CLRegionState, forRegion region: CLRegion!) {
-        println("did determine state")
         if state == .Inside
         {
             slider.tintColor = UIColor.blueColor()
+            println("did determine inside")
+
         }
         else if state == .Outside
         {
             slider.tintColor = UIColor.redColor()
+            println("did determine outside")
         }
         else
         {
             slider.tintColor = UIColor.yellowColor()
+            println("did determine unknown")
         }
     }
 
