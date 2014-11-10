@@ -23,6 +23,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     var currentLocation = CLLocation()
     var usingGPS = true
 
+    //MARK: View lifecycle
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -47,50 +48,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
             let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             resetMonitoredRegion(touchMapCoordinate)
         }
-    }
-
-    //MARK: CLLocationManager Helpers
-    func resetMonitoredRegion(coordinate : CLLocationCoordinate2D)
-    {
-        if let previousOverlays = mapView.overlays
-        {
-            mapView.removeOverlay(previousOverlays[0] as MKOverlay)
-            for monitoredRegion in locationManager.monitoredRegions
-            {
-                locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
-            }
-            slider.tintColor = UIColor.darkGrayColor()
-        }
-
-        let newCoordinate = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
-        let regionSpan = Double(slider.value) as CLLocationDistance
-        let overlay = MKCircle(centerCoordinate: newCoordinate, radius: regionSpan)
-        mapView.addOverlay(overlay)
-
-        let circularRegion = CLCircularRegion(center: newCoordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
-        locationManager.startMonitoringForRegion(circularRegion)
-
-        NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
-    }
-
-    func locationManagerSetUp()
-    {
-        //Requires NSLocationAlwaysUsageDescription key and value in Info.plist
-        locationManager.delegate = self
-        locationManager.requestAlwaysAuthorization()
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-
-        locationManager.startUpdatingLocation()
-        mapView.showsUserLocation = true
-    }
-
-    //MARK: MapView Helpers
-    func centerTheMap(location : CLLocation)
-    {
-        let center = location.coordinate
-        let span = MKCoordinateSpanMake(0.01, 0.01)
-        let region = MKCoordinateRegionMake(center, span)
-        mapView.setRegion(region, animated: true)
     }
 
     //MARK: CLLocationManager
@@ -147,6 +104,66 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
     }
 
+    //MARK: CLLocationManager Helpers
+    func locationManagerSetUp()
+    {
+        //Requires NSLocationAlwaysUsageDescription key and value in Info.plist
+        locationManager.delegate = self
+        locationManager.requestAlwaysAuthorization()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+
+        locationManager.startUpdatingLocation()
+        mapView.showsUserLocation = true
+    }
+
+    func resetMonitoredRegion(coordinate : CLLocationCoordinate2D)
+    {
+        if let previousOverlays = mapView.overlays
+        {
+            mapView.removeOverlay(previousOverlays[0] as MKOverlay)
+            for monitoredRegion in locationManager.monitoredRegions
+            {
+                locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
+            }
+            slider.tintColor = UIColor.darkGrayColor()
+        }
+
+        let newCoordinate = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
+        let regionSpan = Double(slider.value) as CLLocationDistance
+        let overlay = MKCircle(centerCoordinate: newCoordinate, radius: regionSpan)
+        mapView.addOverlay(overlay)
+
+        let circularRegion = CLCircularRegion(center: newCoordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
+        locationManager.startMonitoringForRegion(circularRegion)
+
+        NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
+    }
+
+    //MARK: MKMapView
+    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
+        if overlay is MKCircle
+        {
+            let renderer = MKCircleRenderer(circle: overlay as MKCircle)
+            renderer.fillColor = UIColor.cyanColor().colorWithAlphaComponent(0.2)
+            renderer.strokeColor = UIColor.blueColor().colorWithAlphaComponent(0.7)
+            renderer.lineWidth = 3.0
+            return renderer
+        }
+        else
+        {
+            return nil
+        }
+    }
+
+    //MARK: MapView Helpers
+    func centerTheMap(location : CLLocation)
+    {
+        let center = location.coordinate
+        let span = MKCoordinateSpanMake(0.01, 0.01)
+        let region = MKCoordinateRegionMake(center, span)
+        mapView.setRegion(region, animated: true)
+    }
+
     //MARK: Actions
     @IBAction func onRegionButtonTapped(sender: UIBarButtonItem)
     {
@@ -175,22 +192,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     @IBAction func onSliderMoved(sender: UISlider)
     {
         title = NSString(format: "%.0f", slider.value)
-    }
-
-    //MARK: MKMapView
-    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
-        if overlay is MKCircle
-        {
-            let renderer = MKCircleRenderer(circle: overlay as MKCircle)
-            renderer.fillColor = UIColor.cyanColor().colorWithAlphaComponent(0.2)
-            renderer.strokeColor = UIColor.blueColor().colorWithAlphaComponent(0.7)
-            renderer.lineWidth = 3.0
-            return renderer
-        }
-        else
-        {
-            return nil
-        }
     }
 }
 
