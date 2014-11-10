@@ -13,6 +13,7 @@
 		937895101A0974A600B4CD59 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9378950F1A0974A600B4CD59 /* Images.xcassets */; };
 		9378951F1A0974A600B4CD59 /* GeoTestingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9378951E1A0974A600B4CD59 /* GeoTestingTests.swift */; };
 		937895291A09817C00B4CD59 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 937895281A09817C00B4CD59 /* MapKit.framework */; };
+		93CC2CD21A11776E000E16EE /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 93CC2CD11A11776E000E16EE /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +37,7 @@
 		9378951D1A0974A600B4CD59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9378951E1A0974A600B4CD59 /* GeoTestingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeoTestingTests.swift; sourceTree = "<group>"; };
 		937895281A09817C00B4CD59 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		93CC2CD11A11776E000E16EE /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 		937894FA1A0974A600B4CD59 = {
 			isa = PBXGroup;
 			children = (
+				93CC2CD11A11776E000E16EE /* README.md */,
 				937895281A09817C00B4CD59 /* MapKit.framework */,
 				937895051A0974A600B4CD59 /* GeoTesting */,
 				9378951B1A0974A600B4CD59 /* GeoTestingTests */,
@@ -212,6 +215,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93CC2CD21A11776E000E16EE /* README.md in Sources */,
 				9378950B1A0974A600B4CD59 /* ViewController.swift in Sources */,
 				937895091A0974A600B4CD59 /* AppDelegate.swift in Sources */,
 			);
@@ -397,6 +401,7 @@
 				937895241A0974A600B4CD59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		937895251A0974A600B4CD59 /* Build configuration list for PBXNativeTarget "GeoTestingTests" */ = {
 			isa = XCConfigurationList;
@@ -405,6 +410,7 @@
 				937895271A0974A600B4CD59 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
