@@ -21,6 +21,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     @IBOutlet var slider: UISlider!
     @IBOutlet var segmentedControl: UISegmentedControl!
     var currentLocation = CLLocation()
+    var usingGPS = true
 
     override func viewDidLoad()
     {
@@ -41,31 +42,36 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     {
         if gestureRecognizer.state != UIGestureRecognizerState.Ended
         {
-            if let previousOverlays = mapView.overlays
-            {
-                mapView.removeOverlay(previousOverlays[0] as MKOverlay)
-                for monitoredRegion in locationManager.monitoredRegions
-                {
-                    locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
-                }
-                slider.tintColor = UIColor.darkGrayColor()
-            }
-
             let touchPoint = gestureRecognizer.locationInView(mapView)
             let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
-
-            let coordinate = CLLocationCoordinate2DMake(touchMapCoordinate.latitude, touchMapCoordinate.longitude)
-            let regionSpan = Double(slider.value) as CLLocationDistance
-            let overlay = MKCircle(centerCoordinate: coordinate, radius: regionSpan)
-            mapView.addOverlay(overlay)
-
-            let circularRegion = CLCircularRegion(center: touchMapCoordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
-            locationManager.startMonitoringForRegion(circularRegion)
-
-            NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
+            resetMonitoredRegion(touchMapCoordinate)
         }
+
     }
-    
+
+    func resetMonitoredRegion(coordinate : CLLocationCoordinate2D)
+    {
+        if let previousOverlays = mapView.overlays
+        {
+            mapView.removeOverlay(previousOverlays[0] as MKOverlay)
+            for monitoredRegion in locationManager.monitoredRegions
+            {
+                locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
+            }
+            slider.tintColor = UIColor.darkGrayColor()
+        }
+
+        let newCoordinate = CLLocationCoordinate2DMake(coordinate.latitude, coordinate.longitude)
+        let regionSpan = Double(slider.value) as CLLocationDistance
+        let overlay = MKCircle(centerCoordinate: newCoordinate, radius: regionSpan)
+        mapView.addOverlay(overlay)
+
+        let circularRegion = CLCircularRegion(center: newCoordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
+        locationManager.startMonitoringForRegion(circularRegion)
+
+        NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
+    }
+
 
     func locationManagerSetUp()
     {
@@ -98,18 +104,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
 
         centerTheMap(newLocation)
 
-        locationManager.stopUpdatingLocation()
-//        locationManager.stopMonitoringSignificantLocationChanges()
+        if usingGPS == true
+        {
+            locationManager.stopUpdatingLocation()
+        }
+        else
+        {
+            locationManager.stopMonitoringSignificantLocationChanges()
+
+        }
         println("location updated")
     }
 
     func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
-        println("entered")
+        println("did enter")
         slider.tintColor = UIColor.blueColor()
     }
 
     func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
-        println("exited")
+        println("did exit")
         slider.tintColor = UIColor.redColor()
     }
 
@@ -134,25 +147,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
 
     @IBAction func onRegionButtonTapped(sender: UIBarButtonItem)
     {
-        if let previousOverlays = mapView.overlays
-        {
-            mapView.removeOverlay(previousOverlays[0] as MKOverlay)
-            for monitoredRegion in locationManager.monitoredRegions
-            {
-                locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
-            }
-            slider.tintColor = UIColor.darkGrayColor()
-        }
-
-        let coordinate = CLLocationCoordinate2DMake(currentLocation.coordinate.latitude, currentLocation.coordinate.longitude)
-        let regionSpan = Double(slider.value) as CLLocationDistance
-        let overlay = MKCircle(centerCoordinate: coordinate, radius: regionSpan)
-        mapView.addOverlay(overlay)
-
-        let circularRegion = CLCircularRegion(center: currentLocation.coordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
-        locationManager.startMonitoringForRegion(circularRegion)
-
-        NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
+        resetMonitoredRegion(currentLocation.coordinate)
     }
 
     func requestState()
@@ -180,10 +175,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         if segmentedControl.selectedSegmentIndex == 0
         {
             locationManager.startUpdatingLocation()
+            usingGPS = true
         }
         else
         {
             locationManager.startMonitoringSignificantLocationChanges()
+            usingGPS = false
         }
     }
 
