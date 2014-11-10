@@ -27,10 +27,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     {
         super.viewDidLoad()
         title = NSString(format: "%.0f", slider.value)
-        locationManagerSetUp()
         setUpLongTouchGesture()
+        locationManagerSetUp()
     }
 
+    //MARK: UITapGesture
     func setUpLongTouchGesture()
     {
         let lpgr = UILongPressGestureRecognizer(target: self, action: "handleGesture:")
@@ -46,9 +47,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
             let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
             resetMonitoredRegion(touchMapCoordinate)
         }
-
     }
 
+    //MARK: CLLocationManager Helpers
     func resetMonitoredRegion(coordinate : CLLocationCoordinate2D)
     {
         if let previousOverlays = mapView.overlays
@@ -72,7 +73,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
     }
 
-
     func locationManagerSetUp()
     {
         //Requires NSLocationAlwaysUsageDescription key and value in Info.plist
@@ -84,6 +84,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         mapView.showsUserLocation = true
     }
 
+    //MARK: MapView Helpers
     func centerTheMap(location : CLLocation)
     {
         let center = location.coordinate
@@ -92,6 +93,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         mapView.setRegion(region, animated: true)
     }
 
+    //MARK: CLLocationManager
     func locationManager(manager: CLLocationManager!, didUpdateToLocation newLocation: CLLocation!, fromLocation oldLocation: CLLocation!)
     {
         currentLocation = newLocation
@@ -145,6 +147,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         }
     }
 
+    //MARK: Actions
     @IBAction func onRegionButtonTapped(sender: UIBarButtonItem)
     {
         resetMonitoredRegion(currentLocation.coordinate)
@@ -153,21 +156,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     func requestState()
     {
         locationManager.requestStateForRegion(locationManager.monitoredRegions.allObjects[0] as CLRegion)
-    }
-
-    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
-        if overlay is MKCircle
-        {
-            let renderer = MKCircleRenderer(circle: overlay as MKCircle)
-            renderer.fillColor = UIColor.cyanColor().colorWithAlphaComponent(0.2)
-            renderer.strokeColor = UIColor.blueColor().colorWithAlphaComponent(0.7)
-            renderer.lineWidth = 3.0
-            return renderer
-        }
-        else
-        {
-            return nil
-        }
     }
 
     @IBAction func onUpdateLocationTapped(sender: UIBarButtonItem)
@@ -188,8 +176,25 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     {
         title = NSString(format: "%.0f", slider.value)
     }
+
+    //MARK: MKMapView
+    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
+        if overlay is MKCircle
+        {
+            let renderer = MKCircleRenderer(circle: overlay as MKCircle)
+            renderer.fillColor = UIColor.cyanColor().colorWithAlphaComponent(0.2)
+            renderer.strokeColor = UIColor.blueColor().colorWithAlphaComponent(0.7)
+            renderer.lineWidth = 3.0
+            return renderer
+        }
+        else
+        {
+            return nil
+        }
+    }
 }
 
+//MARK: Extensions
 extension NSDate
 {
     func toStringOfMeridiemTime() -> String
