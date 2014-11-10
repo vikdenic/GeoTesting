@@ -21,7 +21,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     @IBOutlet var slider: UISlider!
     @IBOutlet var segmentedControl: UISegmentedControl!
     var currentLocation = CLLocation()
-    var circularRegion = CLCircularRegion()
 
     override func viewDidLoad()
     {
@@ -36,9 +35,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
     func locationManagerSetUp()
     {
         //Requires NSLocationAlwaysUsageDescription key and value in Info.plist
+        locationManager.delegate = self
         locationManager.requestAlwaysAuthorization()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.delegate = self
 
         locationManager.startUpdatingLocation()
         mapView.showsUserLocation = true
@@ -65,18 +64,22 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         centerTheMap(newLocation)
 
         locationManager.stopUpdatingLocation()
-        locationManager.stopMonitoringSignificantLocationChanges()
+//        locationManager.stopMonitoringSignificantLocationChanges()
+        println("location updated")
     }
 
     func locationManager(manager: CLLocationManager!, didEnterRegion region: CLRegion!) {
         println("entered")
+        slider.tintColor = UIColor.blueColor()
     }
 
     func locationManager(manager: CLLocationManager!, didExitRegion region: CLRegion!) {
         println("exited")
+        slider.tintColor = UIColor.redColor()
     }
 
     func locationManager(manager: CLLocationManager!, didDetermineState state: CLRegionState, forRegion region: CLRegion!) {
+        println("did determine state")
         if state == .Inside
         {
             slider.tintColor = UIColor.blueColor()
@@ -84,6 +87,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         else if state == .Outside
         {
             slider.tintColor = UIColor.redColor()
+        }
+        else
+        {
+            slider.tintColor = UIColor.yellowColor()
         }
     }
 
@@ -96,6 +103,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
             {
                 locationManager.stopMonitoringForRegion(monitoredRegion as CLRegion)
             }
+            slider.tintColor = UIColor.darkGrayColor()
         }
 
         let coordinate = CLLocationCoordinate2DMake(currentLocation.coordinate.latitude, currentLocation.coordinate.longitude)
@@ -103,8 +111,15 @@ class ViewController: UIViewController, CLLocationManagerDelegate, MKMapViewDele
         let overlay = MKCircle(centerCoordinate: coordinate, radius: regionSpan)
         mapView.addOverlay(overlay)
 
-        circularRegion = CLCircularRegion(center: currentLocation.coordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
+        let circularRegion = CLCircularRegion(center: currentLocation.coordinate, radius: regionSpan, identifier: NSDate().toStringOfMeridiemTime())
         locationManager.startMonitoringForRegion(circularRegion)
+
+        NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: "requestState", userInfo: nil, repeats: false)
+    }
+
+    func requestState()
+    {
+        locationManager.requestStateForRegion(locationManager.monitoredRegions.allObjects[0] as CLRegion)
     }
 
     func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer! {
@@ -155,4 +170,3 @@ extension NSDate
         return formattedString + "s"
     }
 }
-
