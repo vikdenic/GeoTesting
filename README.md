@@ -22,4 +22,4 @@ The slider will turn Red when you are detected outside. And yellow when your sta
 
 ## Motivation
 
-To learn more about Geofencing via Apple's 'Core Location framework. And specifically, its accuracy in detecting the state of a user's location relative to a monitored region.
+To learn more about Geofencing via Apple's Core Location framework. And specifically, its accuracy in detecting the state of a user's location relative to a monitored region.
