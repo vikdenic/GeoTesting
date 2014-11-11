@@ -1,6 +1,6 @@
 ## Synopsis
 
-An app that allows the user to manually set monitored geofencing regions, and test whether or not Core Location detects the user is inside or outside of a region.
+An app that allows the user to manually set a monitored geofencing region, and test whether or not Core Location detects the user is inside or outside of said region.
 
 ## How To Use
 
@@ -18,7 +18,7 @@ The slider will turn Blue when you are detected inside the most recently created
 
 The slider will turn Red when you are detected outside. And yellow when your state is unknown.
 
-*Your location is only updated when you manually tap the "Update Location" button. Once this retreives your location, the locationManager will stop updating.
+*Your location is only updated when you manually tap the "Update Location" button. Once this retreives your location, the locationManager will stop updating until the next time it is tapped.
 
 ## Motivation
 
