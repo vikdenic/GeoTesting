@@ -1,6 +1,6 @@
 ## Synopsis
 
-An app that allows the user to manually set monitored geofencing regions, and test whether or not Core Location detects they are inside or outside. 
+An app that allows the user to manually set monitored geofencing regions, and test whether or not Core Location detects the user is inside or outside of a region.
 
 ## How To Use
 
